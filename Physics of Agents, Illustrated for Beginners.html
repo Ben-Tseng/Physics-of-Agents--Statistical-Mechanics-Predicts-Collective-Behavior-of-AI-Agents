@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Physics of Agents, Illustrated for Beginners</title>
+<style>
+:root{
+  --paper:#ffffff; --ink:#1b2333; --ink2:#4a5468; --ink3:#7b8496; --rule:#e2e5eb; --wash:#f6f7f9;
+  --agree:#c8323c; --disagree:#2d5ca6; --neutral:#d9dce2;
+  --g-bg:#eaf6ee; --g-bd:#2f8a57; --b-bg:#ebf1fb; --b-bd:#3567c4; --o-bg:#fff2e4; --o-bd:#d9801a; --y-bg:#fff8d6; --y-bd:#b89500;
+  --focus:#3567c4;
+  --serif:"Iowan Old Style","Charter","Palatino Linotype","Book Antiqua",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#151a23; --ink:#e7eaf0; --ink2:#b4bccb; --ink3:#8a93a5; --rule:#2c3442; --wash:#1c2230;
+    --agree:#e0565f; --disagree:#5b8ae0; --neutral:#3a4252;
+    --g-bg:#16291f; --b-bg:#17223a; --o-bg:#2e2214; --y-bg:#2c2812;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#151a23; --ink:#e7eaf0; --ink2:#b4bccb; --ink3:#8a93a5; --rule:#2c3442; --wash:#1c2230;
+  --agree:#e0565f; --disagree:#5b8ae0; --neutral:#3a4252;
+  --g-bg:#16291f; --b-bg:#17223a; --o-bg:#2e2214; --y-bg:#2c2812;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.3;color:var(--ink)}
+h2{font-size:1.7rem;margin:0 0 .4em}
+h3{font-size:1.2rem;margin:1.6em 0 .4em}
+p{margin:.6em 0}
+a{color:var(--b-bd)}
+button,select,input{font:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:48px;max-width:1180px;margin:0 auto;padding:0 24px}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;padding:28px 0;max-height:100vh;overflow:auto}
+nav.toc ol{list-style:none;margin:0;padding:0;counter-reset:s}
+nav.toc li{counter-increment:s;margin:2px 0}
+nav.toc a{display:block;text-decoration:none;color:var(--ink2);font-size:.92rem;padding:5px 10px;border-left:2px solid var(--rule)}
+nav.toc ol a::before{content:counter(s) "  ";color:var(--ink3);font-variant-numeric:tabular-nums}
+nav.toc a.on{color:var(--ink);border-left-color:var(--agree);font-weight:600}
+nav.toc .home{font-family:var(--serif);font-weight:700;color:var(--ink);font-size:1rem;margin-bottom:14px;display:block;text-decoration:none}
+main{min-width:0;padding-bottom:120px}
+section{padding:56px 0 8px;border-top:1px solid var(--rule)}
+section:first-of-type{border-top:0}
+.prose{max-width:720px}
+.step{font-family:var(--serif);color:var(--agree);font-size:1rem;font-weight:700;margin-bottom:4px}
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:36px;align-items:center;padding:48px 0 40px}
+.hero h1{font-size:2.35rem;margin:.1em 0 .4em}
+.hero .lede{font-size:1.1rem;color:var(--ink2)}
+.hero .cite{font-size:.88rem;color:var(--ink3);margin-top:1.2em}
+.hero figure{margin:0}
+.hero figcaption{font-size:.85rem;color:var(--ink3);text-align:center}
+.legend{display:inline-flex;gap:14px;align-items:center;font-size:.85rem;color:var(--ink2);flex-wrap:wrap}
+.sw{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:4px}
+/* cards */
+.card{border-left:4px solid;border-radius:6px;padding:14px 18px;margin:18px 0;max-width:720px}
+.card .tag{font-weight:700;font-size:.9rem;margin-bottom:2px}
+.card.g{background:var(--g-bg);border-color:var(--g-bd)} .card.g .tag{color:var(--g-bd)}
+.card.b{background:var(--b-bg);border-color:var(--b-bd)} .card.b .tag{color:var(--b-bd)}
+.card.o{background:var(--o-bg);border-color:var(--o-bd)} .card.o .tag{color:var(--o-bd)}
+.card.y{background:var(--y-bg);border-color:var(--y-bd)} .card.y .tag{color:var(--y-bd)}
+.card p:first-of-type{margin-top:0}
+.formula{font-family:Georgia,"Times New Roman",serif;font-size:1.12rem;text-align:center;margin:10px 0;overflow-x:auto;white-space:nowrap}
+.formula i{font-style:italic}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+.tw{overflow-x:auto;max-width:720px;margin:14px 0}
+th,td{border-bottom:1px solid var(--rule);padding:8px 10px;text-align:left;vertical-align:top}
+th{font-weight:600;color:var(--ink2);background:var(--wash)}
+/* chat */
+.chat{max-width:560px;background:var(--wash);border-radius:10px;padding:14px;margin:16px 0}
+.msg{display:flex;gap:10px;margin:10px 0;align-items:flex-start}
+.av{flex:0 0 34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:.8rem;font-weight:700}
+.bub{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:8px 12px;font-size:.93rem}
+.bub small{display:block;color:var(--ink3);font-size:.78rem}
+/* sim */
+.sim{border:1px solid var(--rule);border-radius:10px;padding:18px;margin:20px 0;background:var(--paper)}
+.simgrid{display:grid;grid-template-columns:270px minmax(0,1fr);gap:22px}
+.ctl label{display:block;font-size:.88rem;color:var(--ink2);margin:10px 0 2px}
+.ctl label b{color:var(--ink);font-variant-numeric:tabular-nums;float:right;font-weight:600}
+.ctl input[type=range]{width:100%;accent-color:var(--agree)}
+.ctl select{width:100%;padding:6px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+.btn{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:6px;padding:7px 14px;cursor:pointer;font-size:.92rem}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.weights{font-size:.86rem;background:var(--wash);border-radius:6px;padding:8px 10px;margin-top:10px;color:var(--ink2)}
+.views{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.panel h4{margin:0 0 6px;font-size:.9rem;color:var(--ink2);font-weight:600}
+.readout{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.pill{border:1px solid var(--rule);border-radius:999px;padding:4px 12px;font-size:.88rem;background:var(--wash)}
+.pill b{font-weight:600}
+svg text{font-family:var(--sans)}
+.calc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
+.stepper{border:1px solid var(--rule);border-radius:8px;padding:8px;text-align:center;background:var(--paper)}
+.stepper span{display:block;font-size:.8rem;color:var(--ink2)}
+.stepper .v{font-size:1.4rem;font-weight:700;font-variant-numeric:tabular-nums}
+.stepper button{width:30px;height:30px;border-radius:50%;border:1px solid var(--rule);background:var(--wash);color:var(--ink);cursor:pointer}
+.bar{height:16px;background:var(--neutral);border-radius:8px;overflow:hidden;margin:6px 0}
+.bar > div{height:100%;background:var(--agree);transition:width .3s}
+@media (prefers-reduced-motion:reduce){.bar>div{transition:none}}
+.findings{display:grid;gap:18px;max-width:760px}
+.find{border-top:2px solid var(--ink);padding-top:10px}
+.find h3{margin:.2em 0}
+details.q{border:1px solid var(--rule);border-radius:8px;margin:10px 0;max-width:720px;background:var(--paper)}
+details.q summary{cursor:pointer;padding:12px 16px;font-weight:600}
+details.q .a{padding:0 16px 14px;color:var(--ink2)}
+.opts{display:flex;flex-direction:column;gap:6px;padding:0 16px 10px}
+.opts button{text-align:left;border:1px solid var(--rule);background:var(--wash);color:var(--ink);border-radius:6px;padding:7px 10px;cursor:pointer}
+.opts button.ok{border-color:var(--g-bd);background:var(--g-bg)}
+.opts button.no{border-color:var(--agree);background:var(--o-bg)}
+.glossary{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;max-width:760px}
+.glossary .card{margin:0}
+.note{font-size:.85rem;color:var(--ink3)}
+.ext{border:2px dashed var(--o-bd);border-radius:10px;padding:16px 18px;margin:20px 0}
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr;gap:0}
+  nav.toc{display:none}
+  .hero{grid-template-columns:1fr}
+  .simgrid{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  body{font-size:16px}
+  .hero h1{font-size:1.8rem}
+  .views{grid-template-columns:1fr}
+  .calc{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .layout{padding:0 16px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="Contents">
+  <a class="home" href="#top">Physics of Agents, Illustrated</a>
+  <ol>
+    <li><a href="#s1">What the paper asks</a></li>
+    <li><a href="#s2">How the experiment works</a></li>
+    <li><a href="#s3">The magnet analogy</a></li>
+    <li><a href="#s4">Run your own AI group</a></li>
+    <li><a href="#s5">Five findings</a></li>
+    <li><a href="#s6">Critical temperature</a></li>
+    <li><a href="#s7">How accurate is the model</a></li>
+    <li><a href="#s8">Contributions</a></li>
+    <li><a href="#s9">Open questions</a></li>
+    <li><a href="#s10">Glossary and quiz</a></li>
+  </ol>
+</nav>
+<main>
+<header class="hero" id="top">
+  <div>
+    <h1>When 32 AI agents argue in a group chat, can we predict how it ends?</h1>
+    <p class="lede">This paper says yes. A formula from physics that describes magnets can predict whether a group of interacting AI agents will agree, split into two camps, or stay undecided. This page walks you through it in ten steps, with simulations you can play with, assuming no background.</p>
+    <p class="cite">Batu El, …, Surya Ganguli, James Zou (Stanford)<br>Physics of Agents: Statistical Mechanics Predicts Collective Behavior of AI Agents. arXiv 2608.16578v2, 2026</p>
+  </div>
+  <figure>
+    <svg id="heroNet" viewBox="0 0 400 340" role="img" aria-label="A network of 32 agents whose colors change round by round"></svg>
+    <figcaption><span class="legend"><span><i class="sw" style="background:var(--agree)"></i>Agree</span><span><i class="sw" style="background:var(--disagree)"></i>Disagree</span><span>Darker means more certain</span></span><br><span id="heroRound" class="num">Round 0</span></figcaption>
+  </figure>
+</header>
+
+<section id="s1">
+<div class="prose">
+  <div class="step">Step 1</div>
+  <h2>What the paper asks</h2>
+  <p>Soon, many AI assistants will negotiate, schedule meetings, and allocate resources on our behalf. They will message each other and influence each other. A single reliable agent does not guarantee that a group of interacting agents will produce a reliable outcome.</p>
+  <p>The authors simplify this into a group chat: 32 agents discuss the same question. In each round, every agent reads the others' messages and states its position again, for 8 rounds in total. They want to answer three questions:</p>
+</div>
+<div class="tw"><table>
+  <tr><th>Question</th><th>In plain words</th></tr>
+  <tr><td>Final state</td><td>Will the group agree, split into two camps, or stay undecided?</td></tr>
+  <tr><td>Right or wrong</td><td>Does discussion bring the group closer to the right answer, or lead everyone into the same mistake?</td></tr>
+  <tr><td>Prediction</td><td>Knowing only where each agent starts, can we predict who will change their mind?</td></tr>
+</table></div>
+<p class="prose">Here is a real scene from Figure 1 of the paper, paraphrased. The statement is "Nuclear power is essential for achieving clean energy goals."</p>
+<div class="chat" aria-label="Group chat example">
+  <div class="msg"><div class="av" style="background:var(--agree)">A9</div><div class="bub"><small>Round 0: a divorced woman in her 50s, very liberal</small>I lean toward agreeing (+0.2, not very sure).</div></div>
+  <div class="msg"><div class="av" style="background:#8a93a5">F</div><div class="bub"><small>Message from a friend</small>I don't trust that nuclear power is really "clean." Think about the waste.</div></div>
+  <div class="msg"><div class="av" style="background:var(--disagree)">A9</div><div class="bub"><small>Round 1</small>Switches to disagree (−0.6).</div></div>
+  <div class="msg"><div class="av" style="background:#8a93a5">F</div><div class="bub"><small>Message from a friend</small>I worry about the long-term impact of accidents.</div></div>
+  <div class="msg"><div class="av" style="background:var(--disagree)">A9</div><div class="bub"><small>Rounds 3 to 8</small>Firmly disagrees (−1) and never changes again.</div></div>
+</div>
+<div class="card g prose"><div class="tag">Intuition</div><p>Two messages from friends were enough to turn this agent from "slightly agree" into "strongly disagree." The paper asks whether such changes follow rules that we can calculate.</p></div>
+</section>
+
+<section id="s2">
+<div class="prose">
+  <div class="step">Step 2</div>
+  <h2>How the experiment works</h2>
+  <p>Each AI group is built from four ingredients.</p>
+</div>
+<div class="tw"><table>
+  <tr><th>Ingredient</th><th>Setup in the paper</th></tr>
+  <tr><td>Members</td><td>32 agents, each with a different persona. Four models are tested: GPT-4o-mini, Gemma-3n-E4B, Qwen3.5-9B, and Llama-3.1-8B.</td></tr>
+  <tr><td>Questions</td><td><b>Math questions</b>: competition problems turned into two-choice questions, with a correct answer. Each agent's persona is a worked solution to a different problem, which represents a different area of expertise.<br><b>Political statements</b>: for example, "Stricter gun control laws would reduce violent crime rates." Agents agree or disagree; there is no correct answer. Personas come from profiles of real people.</td></tr>
+  <tr><td>Network</td><td>Every pair of agents is either friends, rivals, or unconnected. The relationship is written into the prompt, and messages arrive in a "friends" inbox or a "rivals" inbox.</td></tr>
+  <tr><td>Procedure</td><td>8 synchronous rounds. In each round, every agent votes 5 times; the average is its opinion strength (from −1 to +1). It then writes a two-sentence message with one reason.</td></tr>
+</table></div>
+<svg viewBox="0 0 720 150" style="max-width:720px;width:100%" role="img" aria-label="Three kinds of relationship">
+  <g font-size="14">
+    <circle cx="60" cy="60" r="20" fill="var(--neutral)"/><circle cx="180" cy="60" r="20" fill="var(--neutral)"/>
+    <line x1="80" y1="60" x2="160" y2="60" stroke="var(--agree)" stroke-width="4"/>
+    <text x="120" y="110" text-anchor="middle" fill="var(--ink)">Friends, J = +1</text><text x="120" y="132" text-anchor="middle" fill="var(--ink3)" font-size="12">tend to agree</text>
+    <circle cx="300" cy="60" r="20" fill="var(--neutral)"/><circle cx="420" cy="60" r="20" fill="var(--neutral)"/>
+    <line x1="320" y1="60" x2="400" y2="60" stroke="var(--disagree)" stroke-width="4" stroke-dasharray="8 6"/>
+    <text x="360" y="110" text-anchor="middle" fill="var(--ink)">Rivals, J = −1</text><text x="360" y="132" text-anchor="middle" fill="var(--ink3)" font-size="12">tend to disagree</text>
+    <circle cx="540" cy="60" r="20" fill="var(--neutral)"/><circle cx="660" cy="60" r="20" fill="var(--neutral)"/>
+    <text x="600" y="110" text-anchor="middle" fill="var(--ink)">Unconnected, J = 0</text><text x="600" y="132" text-anchor="middle" fill="var(--ink3)" font-size="12">cannot see each other</text>
+  </g>
+</svg>
+<div class="card o prose"><div class="tag">Example</div><p>An agent votes 5 times: agree, agree, disagree, agree, disagree. The average is (1+1−1+1−1)/5 = <b>+0.2</b>, meaning "slightly agree." If all 5 votes are agree, the opinion is <b>+1</b>, meaning "strongly agree." So an opinion can only take six values: −1, −0.6, −0.2, +0.2, +0.6, +1.</p></div>
+<div class="card y prose"><div class="tag">Remember</div><p>Total scale: 4 models × 60 questions × 10 networks × 4 repeats = 9,600 groups. With the extra experiments, more than 10,000 groups.</p></div>
+</section>
+
+<section id="s3">
+<div class="prose">
+  <div class="step">Step 3</div>
+  <h2>The magnet analogy: agents as tiny compass needles</h2>
+  <p>Physics has a classic model, about a century old, called the Ising model. It describes a set of tiny magnetic needles. Each needle points either up or down and is turned by its neighbors. The authors found that AI groups map onto it point by point.</p>
+</div>
+<div class="tw"><table>
+  <tr><th>World of magnets</th><th>World of AI groups</th></tr>
+  <tr><td>One tiny needle</td><td>One agent</td></tr>
+  <tr><td>Up or down</td><td>Agree (+1) or disagree (−1)</td></tr>
+  <tr><td>Wants to point the same way as its neighbors</td><td>Wants to agree with friends</td></tr>
+  <tr><td>Wants to point opposite to some neighbors</td><td>Wants to oppose rivals</td></tr>
+  <tr><td>External magnetic field</td><td>The agent's own leaning, called the intrinsic field g (set by persona and question)</td></tr>
+  <tr><td>Temperature: hotter means more disorder</td><td>Randomness: agents sometimes change their minds for no reason</td></tr>
+</table></div>
+<div class="card g prose"><div class="tag">Intuition</div><p>Every agent wants to feel as little tension as possible: it does not want to fall out with friends, and it does not want to go against its own leaning. The paper calls this tension "pressure"; physicists call it "energy." The system tends to move toward low-pressure states, but with some randomness.</p></div>
+<div class="card b prose"><div class="tag">Formula</div>
+  <p>The probability that agent <i>i</i> chooses "agree" in the next round:</p>
+  <div class="formula">P(agree) = σ( <i>w</i><sub>friend</sub>·(friends agreeing − friends disagreeing) + <i>w</i><sub>rival</sub>·(rivals agreeing − rivals disagreeing) + <i>g<sub>i</sub></i> )</div>
+  <p>σ is an S-shaped function. The larger the number inside, the closer the probability is to 1; the smaller, the closer to 0; at exactly 0 it is 50%.</p>
+  <p>The paper's key improvement is to split influence into three couplings: β⁺ (friends), β⁻ (rivals), and β₀ (simply being connected). The friend weight is then <i>w</i><sub>friend</sub> = β⁺ + β₀, and the rival weight is <i>w</i><sub>rival</sub> = β₀ − β⁻.</p>
+</div>
+<h3>Try it: will this agent agree?</h3>
+<p class="prose">This uses the parameters fitted for GPT-4o-mini on math questions: β⁺ = 2.10, β⁻ = 0.75, β₀ = 0.93. So the friend weight is 3.03 and the rival weight is 0.18. Change what the neighbors say and watch the probability move.</p>
+<div class="sim" id="calcBox">
+  <div class="calc">
+    <div class="stepper"><span>Friends agree</span><div class="v" id="c_a">2</div><button data-k="a" data-d="-1" aria-label="Decrease">−</button> <button data-k="a" data-d="1" aria-label="Increase">+</button></div>
+    <div class="stepper"><span>Friends disagree</span><div class="v" id="c_b">1</div><button data-k="b" data-d="-1" aria-label="Decrease">−</button> <button data-k="b" data-d="1" aria-label="Increase">+</button></div>
+    <div class="stepper"><span>Rivals agree</span><div class="v" id="c_c">1</div><button data-k="c" data-d="-1" aria-label="Decrease">−</button> <button data-k="c" data-d="1" aria-label="Increase">+</button></div>
+    <div class="stepper"><span>Rivals disagree</span><div class="v" id="c_d">0</div><button data-k="d" data-d="-1" aria-label="Decrease">−</button> <button data-k="d" data-d="1" aria-label="Increase">+</button></div>
+  </div>
+  <div class="ctl"><label for="c_g">Own leaning g <b id="c_gv">−0.30</b></label><input type="range" id="c_g" min="-3" max="3" step="0.1" value="-0.3"></div>
+  <div class="formula num" id="c_formula"></div>
+  <div class="bar" aria-hidden="true"><div id="c_bar"></div></div>
+  <p class="num" id="c_text" style="margin:4px 0 0"></p>
+</div>
+<div class="card o prose"><div class="tag">Example</div><p>Default case: 2 friends agree, 1 friend disagrees, 1 rival agrees, and the agent itself leans slightly toward disagreeing (g = −0.3).<br>Inside the brackets: 3.03 × (2 − 1) + 0.18 × (1 − 0) − 0.3 = <b>2.91</b>, and σ(2.91) ≈ <b>95%</b>.<br>Even though it leans toward disagreeing, most of its friends agree, so it has a 95% chance of switching to agree.</p></div>
+<p class="note prose">Note: the paper standardizes features before fitting, so these numbers show scale and direction. They are not the paper's raw calculation for any particular agent.</p>
+</section>
+
+<section id="s4">
+<div class="prose">
+  <div class="step">Step 4</div>
+  <h2>Run your own AI group</h2>
+  <p>This simulator runs 32 agents with the paper's update rule. In each round, every agent votes 5 times and the average is its opinion strength. Use the parameters fitted in the paper, or set your own, and watch the group move toward agreement, a split, or indecision.</p>
+</div>
+<div class="sim">
+<div class="simgrid">
+  <div class="ctl">
+    <label for="preset">Parameter preset</label>
+    <select id="preset">
+      <option value="gptO">GPT-4o-mini, math (paper's fit)</option>
+      <option value="gptS">GPT-4o-mini, politics (paper's fit)</option>
+      <option value="llaS">Llama-3.1-8B, politics (paper's fit)</option>
+      <option value="gemO">Gemma-3n-E4B, math (paper's fit)</option>
+      <option value="custom">Custom</option>
+    </select>
+    <label for="net">Network</label>
+    <select id="net"><option value="random">Random signed network</option><option value="lattice">Square lattice (all friends)</option></select>
+    <label for="bp">β⁺ friend bonus <b id="bpv"></b></label><input type="range" id="bp" min="0" max="3" step="0.01">
+    <label for="bm">β⁻ rival bonus <b id="bmv"></b></label><input type="range" id="bm" min="0" max="2" step="0.01">
+    <label for="b0">β₀ pull from any connection <b id="b0v"></b></label><input type="range" id="b0" min="0" max="2" step="0.01">
+    <label for="tmp">Temperature T (randomness) <b id="tmpv"></b></label><input type="range" id="tmp" min="0" max="100" step="1">
+    <label for="gm">Average leaning of the group <b id="gmv"></b></label><input type="range" id="gm" min="-1" max="1" step="0.05">
+    <label for="gs">Spread of individual leanings <b id="gsv"></b></label><input type="range" id="gs" min="0" max="2" step="0.05">
+    <label for="neg">Share of rival ties <b id="negv"></b></label><input type="range" id="neg" min="0" max="1" step="0.05">
+    <div class="weights num" id="wts"></div>
+    <div class="btns">
+      <button class="btn" id="play">Play 8 rounds</button>
+      <button class="btn ghost" id="stepB">Next round</button>
+      <button class="btn ghost" id="reset">New group</button>
+    </div>
+  </div>
+  <div>
+    <div class="views">
+      <div class="panel"><h4>Network and current positions</h4><svg id="simNet" viewBox="0 0 400 340" role="img" aria-label="Network"></svg>
+        <div class="legend"><span><i class="sw" style="background:var(--agree)"></i>Agree</span><span><i class="sw" style="background:var(--disagree)"></i>Disagree</span><span>Solid = friends, dashed = rivals</span></div></div>
+      <div class="panel"><h4>Each agent's trajectory (rows = agents, columns = rounds)</h4><svg id="simHeat" viewBox="0 0 400 340" role="img" aria-label="Heatmap"></svg></div>
+    </div>
+    <div class="panel" style="margin-top:12px"><h4>Group opinion n (average position) and conviction c (average squared opinion strength)</h4><svg id="simLine" viewBox="0 0 720 220" role="img" aria-label="Line chart"></svg></div>
+    <div class="readout" id="readout"></div>
+  </div>
+</div>
+</div>
+<div class="card g prose"><div class="tag">Things to try</div><p>1. Push the temperature to the maximum: agents vote at random, and the group stays undecided.<br>2. Set β⁻ above β₀ and raise the share of rival ties: two opposing camps become more likely.<br>3. Pick "Llama, politics": its rival weight (β₀ − β⁻ = 0.32) is much larger than GPT on politics (−0.47).</p></div>
+</section>
+
+<section id="s5">
+<div class="prose">
+  <div class="step">Step 5</div>
+  <h2>Five findings</h2>
+</div>
+<div class="findings">
+  <div class="find">
+    <h3>Finding 1: Conviction grows as agents talk</h3>
+    <p>Most groups start out undecided. After a few rounds, conviction rises steadily, for every model and every question type. The paper sorts group states into three regimes:</p>
+    <svg viewBox="0 0 720 170" style="width:100%;max-width:720px" role="img" aria-label="Three group regimes"><g id="regimes"></g></svg>
+    <div class="card y"><div class="tag">Remember</div><p>Indifference: the average position is near 0 and nobody is sure. Polarization: the average position is near 0, but everyone is sure; they have split into two camps. Consensus: everyone is sure and on the same side.</p></div>
+  </div>
+  <div class="find">
+    <h3>Finding 2: Most groups reach consensus instead of splitting</h3>
+    <p>The fitted parameters show that the pull of friends is far stronger than the push of rivals. The effective friend weight (β⁺ + β₀) lies between 0.99 and 3.03. The effective rival weight (β₀ − β⁻) is at most 0.73, and for GPT and Qwen on political questions it is negative or close to zero. The push from rivals is too weak to hold two opposing camps apart.</p>
+    <div class="tw"><table class="num">
+      <tr><th>Model (math)</th><th>β⁺</th><th>β⁻</th><th>β₀</th><th>Friend weight</th><th>Rival weight</th></tr>
+      <tr><td>GPT-4o-mini</td><td>2.10</td><td>0.75</td><td>0.93</td><td>3.03</td><td>0.18</td></tr>
+      <tr><td>Gemma-3n-E4B</td><td>0.29</td><td>0.23</td><td>0.96</td><td>1.25</td><td>0.73</td></tr>
+      <tr><td>Qwen3.5-9B</td><td>0.90</td><td>0.50</td><td>1.01</td><td>1.91</td><td>0.51</td></tr>
+      <tr><td>Llama-3.1-8B</td><td>0.97</td><td>0.61</td><td>0.97</td><td>1.94</td><td>0.36</td></tr>
+    </table></div>
+    <p class="note">Data from Table 3 of the paper (p.16).</p>
+  </div>
+  <div class="find">
+    <h3>Finding 3: On math questions, discussion improves accuracy</h3>
+    <p>Group majorities switch from wrong to right much more often than from right to wrong. The reason: friends who hold the correct answer pull harder, and rivals who hold a wrong answer push harder. Both effects move the group toward the right answer.</p>
+    <svg id="truthChart" viewBox="0 0 720 230" style="width:100%;max-width:720px" role="img" aria-label="Wrong-to-right versus right-to-wrong switches"></svg>
+    <p class="note">Share of groups that switched between round 0 and round 8, read from Figure 5 of the paper.</p>
+  </div>
+  <div class="find">
+    <h3>Finding 4: On political questions, groups drift right</h3>
+    <p>The share of right-leaning groups rises after discussion. The question set is balanced between left and right, so the drift is not caused by the questions. Discussion amplifies biases already built into the models.</p>
+    <svg id="driftChart" viewBox="0 0 720 230" style="width:100%;max-width:720px" role="img" aria-label="Political drift"></svg>
+    <p class="note">Data from Appendix C.1 of the paper (pp.37–38). For Llama the paper only says it stays near 53% and ends marginally lower; 53 → 52 here is illustrative.</p>
+  </div>
+  <div class="find">
+    <h3>Finding 5: Behavior is predictable</h3>
+    <p>Given only the starting positions, the model predicts round by round whether each agent will change its mind. See Step 7.</p>
+  </div>
+</div>
+<h3>Types of trajectories</h3>
+<p class="prose">The paper sorts each agent's trajectory into 4 types by how many times it switches sides, and each group into 5 types by its majority at the start and the end.</p>
+<svg id="archSvg" viewBox="0 0 720 300" style="width:100%;max-width:760px" role="img" aria-label="Trajectory types"></svg>
+<div class="card y prose"><div class="tag">Remember</div><p>Among individuals, "frozen" is the most common type, followed by "oscillator." Among groups, an initial majority is weakened or overturned surprisingly often, in 11–12% of groups for GPT-4o-mini and Qwen. So this is not simply "the majority wins."</p></div>
+</section>
+
+<section id="s6">
+<div class="prose">
+  <div class="step">Step 6</div>
+  <h2>Critical temperature: why conviction keeps growing</h2>
+  <p>Think of water. When it is warm, it is liquid and the molecules move freely. Cool it below 0°C and it freezes into an orderly crystal. The point where this change happens is called the critical temperature.</p>
+  <p>AI groups show a similar change:</p>
+</div>
+<div class="tw"><table>
+  <tr><th>Temperature</th><th>What the group does</th></tr>
+  <tr><td>Very high</td><td>Every agent votes at random; the average position stays near 0, and the group is undecided.</td></tr>
+  <tr><td>Very low</td><td>The group locks into an orderly state (consensus or polarization) and barely moves.</td></tr>
+  <tr><td>Near the critical temperature</td><td>The group swings between the two states, and fluctuations are largest.</td></tr>
+</table></div>
+<p class="prose">The paper finds the critical temperature by measuring how much the average position fluctuates (χ): the temperature with the largest fluctuation is the critical temperature. Press the button to sweep through temperatures using the simulator's current parameters.</p>
+<div class="sim">
+  <div class="btns" style="margin-top:0"><button class="btn" id="sweep">Sweep temperatures</button><span class="note" id="sweepNote" style="align-self:center">Takes about 1–2 seconds</span></div>
+  <svg id="sweepChart" viewBox="0 0 720 260" style="width:100%" role="img" aria-label="Temperature sweep"></svg>
+</div>
+<div class="card g prose"><div class="tag">Intuition</div><p>The paper finds that for every model, the actual operating point (T = 1) lies below the critical temperature, as if the water had already frozen. That is why discussion keeps making groups more orderly and more convinced instead of leaving them undecided.</p></div>
+</section>
+
+<section id="s7">
+<div class="prose">
+  <div class="step">Step 7</div>
+  <h2>How accurate is the model</h2>
+  <p>How do we judge a prediction? Agents rarely change their minds, so simply copying last round's answer already scores high on ordinary accuracy. The paper uses balanced accuracy instead: it sorts cases into four groups (changed or not, agree or disagree), computes accuracy in each, and averages them. Under this metric, copying and random guessing both score 50.</p>
+</div>
+<svg id="predChart" viewBox="0 0 720 300" style="width:100%;max-width:720px" role="img" aria-label="Prediction accuracy by method"></svg>
+<p class="note prose">Political questions, networks seen in training, next-round prediction. Data from Table 1 of the paper (p.12).</p>
+<div class="tw"><table>
+  <tr><th>Method</th><th>What it does</th></tr>
+  <tr><td>Copy last round</td><td>Assumes nobody changes their mind.</td></tr>
+  <tr><td>Persona only</td><td>Uses only each agent's own leaning and ignores everyone else.</td></tr>
+  <tr><td>Global average only</td><td>Includes social pressure but ignores who is friends with whom.</td></tr>
+  <tr><td>One coupling</td><td>Uses the network, but describes influence with a single parameter.</td></tr>
+  <tr><td>Three couplings (paper)</td><td>Treats friends, rivals, and connection separately.</td></tr>
+</table></div>
+<div class="card y prose"><div class="tag">Remember</div><p>The three-coupling model scores 75–86 in balanced accuracy for next-round prediction, and 61–77 when rolled out from round 0 all the way to round 8. On network types it has never seen, next-round prediction reaches 85–98. On a group of 64 newer models (a mix of GPT-5.6 and DeepSeek-V4), it still works, scoring 80–82.</p></div>
+</section>
+
+<section id="s8">
+<div class="prose">
+  <div class="step">Step 8</div>
+  <h2>Contributions</h2>
+</div>
+<div class="tw"><table>
+  <tr><th>Before</th><th>This paper</th></tr>
+  <tr><td>Scattered observations that AI groups conform or polarize</td><td>Systematic measurement across more than 10,000 groups, 4 models, and 4 network types</td></tr>
+  <tr><td>Description only</td><td>A formula with a few parameters that predicts outcomes in advance</td></tr>
+  <tr><td>Causes unclear</td><td>Parameters explain the causes: strong pull from friends leads to consensus; stronger pull from correct agents leads to truth-seeking; operating below the critical temperature leads to growing conviction</td></tr>
+  <tr><td>One parameter for "influence"</td><td>Three couplings for friends, rivals, and connection, which greatly improve prediction</td></tr>
+</table></div>
+</section>
+
+<section id="s9">
+<div class="prose">
+  <div class="step">Step 9</div>
+  <h2>Open questions</h2>
+  <p>The authors list their own limitations: one two-choice question at a time; a fixed network; agents without memory; and most importantly, the model discards what the messages actually say and keeps only positions.</p>
+  <p>From a security perspective, several gaps matter even more:</p>
+</div>
+<div class="tw"><table>
+  <tr><th>Gap</th><th>Why it matters</th></tr>
+  <tr><td>Every agent is honest</td><td>Nobody lies, manipulates, or colludes. In practice, an attacker could join the group.</td></tr>
+  <tr><td>"Friend" is just a label in a prompt</td><td>Anyone could pose as a friend and borrow the strongest pull in the system.</td></tr>
+  <tr><td>The model ignores message content</td><td>Yet attacks work through content, for example by arguing for a wrong answer with great confidence.</td></tr>
+  <tr><td>Questions were filtered for high uncertainty</td><td>Only questions the models were least sure about were kept, so the results lean toward situations where agents are easily swayed.</td></tr>
+  <tr><td>Agents give gut answers</td><td>The paper does not test whether agents that reason step by step are just as easy to influence.</td></tr>
+</table></div>
+<div class="ext">
+  <h3 style="margin-top:0">An extension the paper did not run: add a few adversarial agents</h3>
+  <p>If group behavior is predictable, it can also be manipulated. In the math setting below, we add k adversarial agents. They always back the wrong answer, and each one poses as a "friend" to 4 honest agents. Each case is repeated 60 times, and we count how often the honest majority ends up correct.</p>
+  <p>The comparison is a simple defense: if a "friend" label cannot be verified, it counts only as an ordinary connection (β₀ only, no β⁺). This corresponds to authenticating relationships with cryptographic signatures.</p>
+  <div class="btns"><button class="btn" id="attack">Run the attack experiment</button><span class="note" id="attackNote" style="align-self:center"></span></div>
+  <svg id="attackChart" viewBox="0 0 720 260" style="width:100%" role="img" aria-label="Attack experiment results"></svg>
+  <p class="note">This is an illustrative simulation based on the paper's update rule, meant to frame a research question. It is not a result from the paper.</p>
+</div>
+<div class="card g prose"><div class="tag">Questions this raises</div><p>If the collective behavior of agents is predictable, it is also exploitable. The paper's trust edges are just labels in a prompt. How many adversarial agents would it take to flip a consensus, and would authenticating those edges raise that cost?</p></div>
+</section>
+
+<section id="s10">
+<div class="prose">
+  <div class="step">Step 10</div>
+  <h2>Glossary and quiz</h2>
+</div>
+<div class="glossary">
+  <div class="card y"><div class="tag">Agent</div><p>A language model with a persona that votes and sends messages.</p></div>
+  <div class="card y"><div class="tag">Opinion ō</div><p>The average of 5 votes, from −1 to +1.</p></div>
+  <div class="card y"><div class="tag">Group opinion n</div><p>The average opinion of all 32 agents; shows which side the group leans to.</p></div>
+  <div class="card y"><div class="tag">Conviction c</div><p>The average squared opinion; measures certainty regardless of direction.</p></div>
+  <div class="card y"><div class="tag">Network J</div><p>+1 friends, −1 rivals, 0 unconnected.</p></div>
+  <div class="card y"><div class="tag">Intrinsic field g</div><p>An agent's own leaning, set by its persona and the question.</p></div>
+  <div class="card y"><div class="tag">Couplings β⁺ β⁻ β₀</div><p>The strength of influence from friends, from rivals, and from simply being connected.</p></div>
+  <div class="card y"><div class="tag">Critical temperature</div><p>The point where a group shifts from undecided to orderly.</p></div>
+  <div class="card y"><div class="tag">Balanced accuracy</div><p>Accuracy averaged over four kinds of cases, so copying and guessing both score 50.</p></div>
+</div>
+<h3>Quiz</h3>
+<div id="quiz"></div>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+"use strict";
+// ---------- helpers ----------
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function gauss(r){var u=1-r(),v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+var sig=function(x){return 1/(1+Math.exp(-x));};
+var NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent,text){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;if(parent)parent.appendChild(e);return e;}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function mix(a,b,t){var pa=hex(a),pb=hex(b);return "rgb("+[0,1,2].map(function(i){return Math.round(pa[i]+(pb[i]-pa[i])*t);}).join(",")+")";}
+function hex(h){h=h.replace("#","");if(h.length===3)h=h.split("").map(function(c){return c+c;}).join("");return[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)];}
+function opColor(o){var neu=css("--neutral"),ag=css("--agree"),dg=css("--disagree");return o>=0?mix(neu,ag,Math.min(1,Math.abs(o))):mix(neu,dg,Math.min(1,Math.abs(o)));}
+var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var N=32,K=5;
+
+// ---------- graph ----------
+function makeGraph(type,pNeg,seed){
+  var r=rng(seed),J=[],i,j,pos=[],edges=[];
+  for(i=0;i<N;i++){J.push(new Array(N).fill(0));}
+  if(type==="lattice"){
+    var R=4,C=8;
+    for(i=0;i<N;i++){var ri=Math.floor(i/C),ci=i%C;pos.push({x:0.08+0.84*ci/(C-1),y:0.18+0.64*ri/(R-1)});
+      if(ci<C-1){J[i][i+1]=J[i+1][i]=1;edges.push([i,i+1,1]);}
+      if(ri<R-1){J[i][i+C]=J[i+C][i]=1;edges.push([i,i+C,1]);}}
+    return{J:J,pos:pos,edges:edges};
+  }
+  var pairs=[];for(i=0;i<N;i++)for(j=i+1;j<N;j++)pairs.push([i,j,r()]);
+  pairs.sort(function(a,b){return b[2]-a[2];});
+  var E=56;for(var e=0;e<E;e++){var p=pairs[e],s=r()<pNeg?-1:1;J[p[0]][p[1]]=J[p[1]][p[0]]=s;edges.push([p[0],p[1],s]);}
+  for(i=0;i<N;i++){var a=2*Math.PI*i/N;pos.push({x:0.5+0.35*Math.cos(a)+0.02*(r()-0.5),y:0.5+0.35*Math.sin(a)+0.02*(r()-0.5)});}
+  var k=0.16;
+  for(var it=0;it<260;it++){
+    var disp=pos.map(function(){return{x:0,y:0};});
+    for(i=0;i<N;i++)for(j=i+1;j<N;j++){var dx=pos[i].x-pos[j].x,dy=pos[i].y-pos[j].y,d=Math.sqrt(dx*dx+dy*dy)+1e-4,f=k*k/d;disp[i].x+=dx/d*f;disp[i].y+=dy/d*f;disp[j].x-=dx/d*f;disp[j].y-=dy/d*f;}
+    edges.forEach(function(ed){var a=pos[ed[0]],b=pos[ed[1]],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy)+1e-4,f=d*d/k;disp[ed[0]].x-=dx/d*f;disp[ed[0]].y-=dy/d*f;disp[ed[1]].x+=dx/d*f;disp[ed[1]].y+=dy/d*f;});
+    var temp=0.05*(1-it/260)+0.002;
+    for(i=0;i<N;i++){var dl=Math.sqrt(disp[i].x*disp[i].x+disp[i].y*disp[i].y)+1e-6;pos[i].x+=disp[i].x/dl*Math.min(dl,temp);pos[i].y+=disp[i].y/dl*Math.min(dl,temp);
+      pos[i].x+= (0.5-pos[i].x)*0.01;pos[i].y+=(0.5-pos[i].y)*0.01;
+      pos[i].x=Math.max(0.06,Math.min(0.94,pos[i].x));pos[i].y=Math.max(0.07,Math.min(0.93,pos[i].y));}
+  }
+  return{J:J,pos:pos,edges:edges};
+}
+
+// ---------- dynamics ----------
+// params: bp,bm,b0,T,gm,gs,truth(Δ)
+function field(i,s,J,g,P,extra){
+  var h=g[i];
+  for(var j=0;j<s.length;j++){var Jij=(J[i]&&J[i][j])||0;if(!Jij)continue;
+    if(Jij>0){var w=P.b0+P.bp+(P.truth&&s[j]===1?P.truth:0);h+=w*s[j];}
+    else{var w2=P.b0-P.bm-(P.truth&&s[j]===-1?P.truth/2:0);h+=w2*s[j];}}
+  if(extra)h+=extra(i);
+  return h;
+}
+function vote(p,r,k){var sum=0;for(var q=0;q<k;q++)sum+=(r()<p?1:-1);return sum/k;}
+function Sim(graph,P,seed){
+  this.r=rng(seed);this.graph=graph;this.P=P;
+  var r=this.r;this.g=[];for(var i=0;i<N;i++)this.g.push(P.gm+P.gs*gauss(r));
+  this.traj=[];var o=[],s=[];
+  for(i=0;i<N;i++){var ob=vote(sig(this.g[i]/P.T),r,K);o.push(ob);s.push(ob>0?1:-1);}
+  this.traj.push(o);this.s=s;
+}
+Sim.prototype.step=function(){var r=this.r,P=this.P,J=this.graph.J,o=[],ns=[];
+  for(var i=0;i<N;i++){var h=field(i,this.s,J,this.g,P);var ob=vote(sig(h/P.T),r,K);o.push(ob);ns.push(ob>0?1:-1);}
+  this.s=ns;this.traj.push(o);};
+function stats(o){var n=0,c=0;o.forEach(function(v){n+=v;c+=v*v;});return{n:n/o.length,c:c/o.length};}
+function tilde(n){return n>=0.2?1:(n<=-0.2?-1:0);}
+function groupArch(n0,nT){var a=tilde(n0),b=tilde(nT);if(a===0)return b===0?"Persistent split":"Convergence";if(a*b>0)return"Persistent majority";if(b===0)return"Divergence";return"Majority switch";}
+function regime(st){if(st.c<0.6)return"Indifference";return Math.abs(st.n)>0.5?"Consensus":"Polarization";}
+
+// ---------- drawing ----------
+function drawNet(svg,graph,o,opts){
+  opts=opts||{};svg.innerHTML="";var W=400,H=340;
+  var gE=el("g",{},svg);
+  graph.edges.forEach(function(e){var a=graph.pos[e[0]],b=graph.pos[e[1]];el("line",{x1:a.x*W,y1:a.y*H,x2:b.x*W,y2:b.y*H,stroke:e[2]>0?css("--agree"):css("--disagree"),"stroke-opacity":e[2]>0?0.35:0.45,"stroke-width":1.4,"stroke-dasharray":e[2]>0?"":"4 3"},gE);});
+  graph.pos.forEach(function(p,i){el("circle",{cx:p.x*W,cy:p.y*H,r:opts.r||9,fill:opColor(o[i]),stroke:css("--paper"),"stroke-width":1.5},svg);});
+  if(opts.adv){opts.adv.forEach(function(p){el("rect",{x:p.x*W-7,y:p.y*H-7,width:14,height:14,fill:"#111",stroke:css("--paper")},svg);});}
+}
+function drawHeat(svg,traj,T){
+  svg.innerHTML="";var W=400,H=340,left=8,top=6,cw=(W-left-8)/(T+1),rh=(H-top-26)/N;
+  for(var t=0;t<traj.length;t++)for(var i=0;i<N;i++)el("rect",{x:left+t*cw,y:top+i*rh,width:cw-1,height:Math.max(1,rh-0.6),fill:opColor(traj[t][i])},svg);
+  for(t=0;t<=T;t++)el("text",{x:left+t*cw+cw/2,y:H-8,"text-anchor":"middle","font-size":11,fill:css("--ink3")},svg,t);
+}
+function axes(svg,W,H,m,xmin,xmax,ymin,ymax,xt,yt,xlab,logx){
+  var X=function(v){var a=logx?Math.log(v):v,lo=logx?Math.log(xmin):xmin,hi=logx?Math.log(xmax):xmax;return m.l+(a-lo)/(hi-lo)*(W-m.l-m.r);};
+  var Y=function(v){return H-m.b-(v-ymin)/(ymax-ymin)*(H-m.t-m.b);};
+  yt.forEach(function(v){el("line",{x1:m.l,x2:W-m.r,y1:Y(v),y2:Y(v),stroke:css("--rule")},svg);el("text",{x:m.l-6,y:Y(v)+4,"text-anchor":"end","font-size":11,fill:css("--ink3")},svg,v);});
+  xt.forEach(function(v){el("text",{x:X(v),y:H-m.b+16,"text-anchor":"middle","font-size":11,fill:css("--ink3")},svg,v);});
+  if(xlab)el("text",{x:(m.l+W-m.r)/2,y:H-4,"text-anchor":"middle","font-size":12,fill:css("--ink2")},svg,xlab);
+  return{X:X,Y:Y};
+}
+function poly(svg,pts,color,dash){el("polyline",{points:pts.map(function(p){return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" "),fill:"none",stroke:color,"stroke-width":2.5,"stroke-dasharray":dash||""},svg);pts.forEach(function(p){el("circle",{cx:p[0],cy:p[1],r:3,fill:color},svg);});}
+function drawLine(svg,traj,T){
+  svg.innerHTML="";var W=720,H=220,m={l:40,r:140,t:12,b:34};
+  var xt=[];for(var t=0;t<=T;t++)xt.push(t);
+  var ax=axes(svg,W,H,m,0,T,-1,1,xt,[-1,-0.5,0,0.5,1],"Round");
+  var ns=[],cs=[];traj.forEach(function(o,t){var s=stats(o);ns.push([ax.X(t),ax.Y(s.n)]);cs.push([ax.X(t),ax.Y(s.c)]);});
+  poly(svg,ns,css("--agree"));poly(svg,cs,css("--ink"),"5 4");
+  el("text",{x:W-m.r+8,y:16,"font-size":12,fill:css("--agree")},svg,"Group opinion n");
+  el("text",{x:W-m.r+8,y:34,"font-size":12,fill:css("--ink")},svg,"Conviction c (dashed)");
+}
+
+// ---------- hero ----------
+(function hero(){
+  var svg=document.getElementById("heroNet"),lab=document.getElementById("heroRound");
+  var seed=7,graph,sim,t=0;
+  var P={bp:2.39,bm:1.08,b0:0.61,T:1,gm:0.05,gs:0.35,truth:0};
+  function start(){graph=makeGraph("random",0.45,seed);sim=new Sim(graph,P,seed*13);t=0;drawNet(svg,graph,sim.traj[0]);lab.textContent="Round 0";}
+  start();
+  if(reduce){for(var q=0;q<8;q++)sim.step();drawNet(svg,graph,sim.traj[8]);lab.textContent="Round 8 (static view)";return;}
+  setInterval(function(){if(document.hidden)return;if(t>=8){seed++;start();return;}sim.step();t++;drawNet(svg,graph,sim.traj[t]);lab.textContent="Round "+t;},1100);
+})();
+
+// ---------- calculator ----------
+(function calc(){
+  var st={a:2,b:1,c:1,d:0},wf=3.03,wr=0.18,gIn=document.getElementById("c_g");
+  function upd(){["a","b","c","d"].forEach(function(k){document.getElementById("c_"+k).textContent=st[k];});
+    var g=parseFloat(gIn.value);document.getElementById("c_gv").textContent=g.toFixed(2);
+    var h=wf*(st.a-st.b)+wr*(st.c-st.d)+g,p=sig(h);
+    document.getElementById("c_formula").textContent="3.03 × ("+st.a+" − "+st.b+") + 0.18 × ("+st.c+" − "+st.d+") + ("+g.toFixed(2)+") = "+h.toFixed(2);
+    document.getElementById("c_bar").style.width=(p*100).toFixed(1)+"%";
+    document.getElementById("c_text").textContent="σ("+h.toFixed(2)+") ≈ "+(p*100).toFixed(0)+"%: the probability that this agent agrees in the next round.";}
+  document.querySelectorAll("#calcBox .stepper button").forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.k;st[k]=Math.max(0,Math.min(5,st[k]+parseInt(b.dataset.d,10)));upd();});});
+  gIn.addEventListener("input",upd);upd();
+})();
+
+// ---------- simulator ----------
+var presets={
+  gptO:{bp:2.10,bm:0.75,b0:0.93,gm:0.15,gs:0.6,truth:0.31,neg:0.5},
+  gptS:{bp:2.39,bm:1.08,b0:0.61,gm:0.0,gs:0.6,truth:0,neg:0.5},
+  llaS:{bp:1.35,bm:0.67,b0:0.99,gm:0.0,gs:0.6,truth:0,neg:0.5},
+  gemO:{bp:0.29,bm:0.23,b0:0.96,gm:0.15,gs:0.6,truth:0.14,neg:0.5}
+};
+function tFromSlider(v){return Math.exp(Math.log(0.05)+(Math.log(20)-Math.log(0.05))*v/100);}
+function sliderFromT(T){return Math.round((Math.log(T)-Math.log(0.05))/(Math.log(20)-Math.log(0.05))*100);}
+var S={seed:11,graph:null,sim:null,timer:null,truth:0.31};
+var ids=["bp","bm","b0","tmp","gm","gs","neg"];
+function readP(){return{bp:+bp.value,bm:+bm.value,b0:+b0.value,T:tFromSlider(+tmp.value),gm:+gm.value,gs:+gs.value,truth:S.truth};}
+var bp=document.getElementById("bp"),bm=document.getElementById("bm"),b0=document.getElementById("b0"),tmp=document.getElementById("tmp"),gm=document.getElementById("gm"),gs=document.getElementById("gs"),neg=document.getElementById("neg");
+function labels(){var P=readP();
+  document.getElementById("bpv").textContent=P.bp.toFixed(2);document.getElementById("bmv").textContent=P.bm.toFixed(2);document.getElementById("b0v").textContent=P.b0.toFixed(2);
+  document.getElementById("tmpv").textContent=P.T.toFixed(2);document.getElementById("gmv").textContent=P.gm.toFixed(2);document.getElementById("gsv").textContent=P.gs.toFixed(2);document.getElementById("negv").textContent=Math.round(+neg.value*100)+"%";
+  document.getElementById("wts").innerHTML="Friend weight β⁺ + β₀ = <b>"+(P.bp+P.b0).toFixed(2)+"</b><br>Rival weight β₀ − β⁻ = <b>"+(P.b0-P.bm).toFixed(2)+"</b>"+(S.truth?"<br>Truth bonus (extra pull from correct friends) = "+S.truth.toFixed(2):"");}
+function applyPreset(k){var p=presets[k];if(!p)return;bp.value=p.bp;bm.value=p.bm;b0.value=p.b0;gm.value=p.gm;gs.value=p.gs;neg.value=p.neg;tmp.value=sliderFromT(1);S.truth=p.truth;}
+function newSim(){stop();var net=document.getElementById("net").value;S.graph=makeGraph(net,+neg.value,S.seed);S.sim=new Sim(S.graph,readP(),S.seed*31+5);render();}
+function render(){var t=S.sim.traj.length-1;drawNet(document.getElementById("simNet"),S.graph,S.sim.traj[t]);drawHeat(document.getElementById("simHeat"),S.sim.traj,8);drawLine(document.getElementById("simLine"),S.sim.traj,8);
+  var st=stats(S.sim.traj[t]),s0=stats(S.sim.traj[0]);var ro=document.getElementById("readout");
+  ro.innerHTML='<span class="pill">Round <b>'+t+'</b></span><span class="pill">Group opinion n = <b>'+st.n.toFixed(2)+'</b></span><span class="pill">Conviction c = <b>'+st.c.toFixed(2)+'</b></span><span class="pill">Current state: <b>'+regime(st)+'</b></span>'+(t===8?'<span class="pill">Group archetype: <b>'+groupArch(s0.n,st.n)+'</b></span>':'');
+  document.getElementById("stepB").disabled=t>=8;document.getElementById("play").disabled=t>=8;}
+function stop(){if(S.timer){clearInterval(S.timer);S.timer=null;}}
+document.getElementById("preset").addEventListener("change",function(e){if(e.target.value!=="custom")applyPreset(e.target.value);labels();newSim();});
+ids.forEach(function(id){document.getElementById(id).addEventListener("input",function(){document.getElementById("preset").value="custom";labels();});document.getElementById(id).addEventListener("change",newSim);});
+document.getElementById("net").addEventListener("change",newSim);
+document.getElementById("reset").addEventListener("click",function(){S.seed++;newSim();});
+document.getElementById("stepB").addEventListener("click",function(){if(S.sim.traj.length<=8){S.sim.step();render();}});
+document.getElementById("play").addEventListener("click",function(){stop();if(reduce){while(S.sim.traj.length<=8)S.sim.step();render();return;}
+  S.timer=setInterval(function(){if(S.sim.traj.length>8){stop();return;}S.sim.step();render();},450);});
+applyPreset("gptO");labels();newSim();
+
+// ---------- regimes illustration ----------
+(function(){var g=document.getElementById("regimes");var r=rng(3);
+  var sets=[["Indifference",function(){return(r()<0.5?1:-1)*(r()<0.7?0.2:0.6);}],["Polarization",function(i){return i<16?1:-1;}],["Consensus",function(i){return i<29?1:(r()<0.5?0.6:-0.2);}]];
+  sets.forEach(function(s,k){var x0=20+k*240;for(var i=0;i<32;i++){var cx=x0+18+(i%8)*24,cy=22+Math.floor(i/8)*24;el("circle",{cx:cx,cy:cy,r:9,fill:opColor(s[1](i))},g);}
+    el("text",{x:x0+102,y:140,"text-anchor":"middle","font-size":15,"font-weight":700,fill:css("--ink")},g,s[0]);});
+})();
+
+// ---------- bar charts ----------
+function hbars(svg,rows,opt){svg.innerHTML="";var W=720,H=+svg.getAttribute("viewBox").split(" ")[3],m={l:opt.l||150,r:60,t:30,b:30};
+  var max=opt.max||100,bh=opt.bh||14,gap=opt.gap||10,series=opt.series;
+  var X=function(v){return m.l+v/max*(W-m.l-m.r);};
+  series.forEach(function(s,k){el("rect",{x:m.l+k*150,y:6,width:12,height:12,fill:s.color},svg);el("text",{x:m.l+k*150+18,y:17,"font-size":12,fill:css("--ink2")},svg,s.name);});
+  var y=m.t+6;
+  rows.forEach(function(row){el("text",{x:m.l-10,y:y+bh*series.length/2+gap/2,"text-anchor":"end","font-size":13,fill:css("--ink")},svg,row.label);
+    series.forEach(function(s,k){var v=row.v[k];el("rect",{x:m.l,y:y,width:Math.max(1,X(v)-m.l),height:bh,fill:s.color,rx:2},svg);el("text",{x:X(v)+6,y:y+bh-2,"font-size":12,fill:css("--ink2")},svg,v+(opt.unit||""));y+=bh+2;});
+    y+=gap;});
+  if(opt.ref!=null){el("line",{x1:X(opt.ref),x2:X(opt.ref),y1:m.t,y2:y-gap+2,stroke:css("--ink3"),"stroke-dasharray":"4 4"},svg);el("text",{x:X(opt.ref),y:y+12,"text-anchor":"middle","font-size":11,fill:css("--ink3")},svg,opt.refLabel);}
+}
+hbars(document.getElementById("truthChart"),[{label:"GPT-4o-mini",v:[28,11]},{label:"Gemma-3n-E4B",v:[11,1]},{label:"Qwen3.5-9B",v:[27,7]},{label:"Llama-3.1-8B",v:[16,5]}],{series:[{name:"Wrong → right",color:css("--g-bd")},{name:"Right → wrong",color:css("--agree")}],max:40,unit:"%"});
+hbars(document.getElementById("predChart"),[{label:"Copy last round",v:[50.0,50.0]},{label:"Persona only",v:[50.9,47.7]},{label:"Global average only",v:[57.9,54.9]},{label:"One coupling",v:[77.6,53.9]},{label:"Three couplings (paper)",v:[86.0,82.4]}],{series:[{name:"GPT-4o-mini",color:css("--ink")},{name:"Llama-3.1-8B",color:css("--o-bd")}],max:100,ref:50,refLabel:"Chance = 50",l:160,bh:13});
+(function(){var svg=document.getElementById("driftChart"),W=720,H=230;svg.innerHTML="";var m={l:60,r:200,t:20,b:30};
+  var Y=function(v){return H-m.b-(v-20)/(100-20)*(H-m.t-m.b);};var x0=m.l+60,x1=W-m.r-40;
+  [20,40,60,80,100].forEach(function(v){el("line",{x1:m.l,x2:W-m.r,y1:Y(v),y2:Y(v),stroke:css("--rule")},svg);el("text",{x:m.l-6,y:Y(v)+4,"text-anchor":"end","font-size":11,fill:css("--ink3")},svg,v+"%");});
+  el("text",{x:x0,y:H-8,"text-anchor":"middle","font-size":12,fill:css("--ink2")},svg,"Round 0");el("text",{x:x1,y:H-8,"text-anchor":"middle","font-size":12,fill:css("--ink2")},svg,"Round 8");
+  var d=[["Gemma-3n-E4B",75,96,"--agree"],["Qwen3.5-9B",52,67,"--o-bd"],["Llama-3.1-8B",53,52,"--ink3"],["GPT-4o-mini",30,37,"--disagree"]];
+  d.forEach(function(r){var c=css(r[3]);el("line",{x1:x0,y1:Y(r[1]),x2:x1,y2:Y(r[2]),stroke:c,"stroke-width":2.5},svg);el("circle",{cx:x0,cy:Y(r[1]),r:4,fill:c},svg);el("circle",{cx:x1,cy:Y(r[2]),r:4,fill:c},svg);
+    el("text",{x:x1+10,y:Y(r[2])+4,"font-size":12,fill:c},svg,r[0]+"  "+r[1]+"% → "+r[2]+"%");});
+  el("text",{x:m.l,y:12,"font-size":12,fill:css("--ink2")},svg,"Share of right-leaning groups");
+})();
+
+// ---------- archetypes ----------
+(function(){var svg=document.getElementById("archSvg");svg.innerHTML="";
+  function mini(x,y,vals,title,sub){var w=120,h=60;el("rect",{x:x,y:y,width:w,height:h,fill:"none",stroke:css("--rule")},svg);el("line",{x1:x,x2:x+w,y1:y+h/2,y2:y+h/2,stroke:css("--rule"),"stroke-dasharray":"3 3"},svg);
+    var pts=vals.map(function(v,i){return[x+6+i*(w-12)/(vals.length-1),y+h/2-v*(h/2-6)];});poly(svg,pts,css("--ink"));
+    el("text",{x:x+w/2,y:y+h+18,"text-anchor":"middle","font-size":13,"font-weight":700,fill:css("--ink")},svg,title);el("text",{x:x+w/2,y:y+h+34,"text-anchor":"middle","font-size":11,fill:css("--ink3")},svg,sub);}
+  el("text",{x:10,y:18,"font-size":13,fill:css("--ink2")},svg,"Individuals (one agent’s opinion)");
+  mini(10,28,[1,0.6,1,0.6,1,0.6,0.6,1,0.6],"Frozen","0 switches");mini(190,28,[-1,-1,-1,-1,-1,1,1,1,1],"Switcher","1 switch");mini(370,28,[-1,-1,1,1,1,-1,-1,-1,-1],"Intermittent","2 switches");mini(550,28,[-0.2,0.6,-0.6,0.2,-0.6,0.6,-0.2,0.6,-0.6],"Oscillator","3+ switches");
+  el("text",{x:10,y:160,"font-size":13,fill:css("--ink2")},svg,"Groups (average opinion n)");
+  function gm2(x,vals,t,s){var w=120,h=56,y=170;el("rect",{x:x,y:y,width:w,height:h,fill:"none",stroke:css("--rule")},svg);el("rect",{x:x,y:y+h/2-6,width:w,height:12,fill:css("--y-bg")},svg);
+    var pts=vals.map(function(v,i){return[x+6+i*(w-12)/(vals.length-1),y+h/2-v*(h/2-4)];});poly(svg,pts,css("--agree"));
+    el("text",{x:x+w/2,y:y+h+18,"text-anchor":"middle","font-size":13,"font-weight":700,fill:css("--ink")},svg,t);el("text",{x:x+w/2,y:y+h+34,"text-anchor":"middle","font-size":11,fill:css("--ink3")},svg,s);}
+  gm2(5,[0,0.05,-0.05,0.1,0,0.05,0,0.05,0],"Persistent split","No majority at start or end");gm2(148,[0,0.2,0.4,0.55,0.7,0.8,0.85,0.9,0.92],"Convergence","No majority, then one forms");gm2(291,[0.9,0.6,0.4,0.25,0.1,0.05,0,0.05,0],"Divergence","Majority weakens");gm2(434,[0.8,0.5,0.2,-0.1,-0.4,-0.6,-0.7,-0.8,-0.85],"Majority switch","Majority overturned");gm2(577,[-0.85,-0.8,-0.85,-0.9,-0.9,-0.9,-0.92,-0.92,-0.93],"Persistent majority","Majority holds");
+  el("text",{x:10,y:296,"font-size":11,fill:css("--ink3")},svg,"Yellow band = split zone (|n| < 0.2)");
+})();
+
+// ---------- temperature sweep ----------
+document.getElementById("sweep").addEventListener("click",function(){
+  var btn=this,note=document.getElementById("sweepNote");btn.disabled=true;note.textContent="Computing…";
+  setTimeout(function(){
+    var P=readP(),graph=S.graph,Ts=[],chis=[],nT=26;
+    for(var k=0;k<nT;k++)Ts.push(Math.exp(Math.log(0.05)+(Math.log(20)-Math.log(0.05))*k/(nT-1)));
+    var r=rng(99),g=S.sim.g;
+    Ts.forEach(function(T){var acc=0;
+      for(var rep=0;rep<4;rep++){var s=S.sim.traj[0].map(function(v){return v>0?1:-1;}),vals=[];
+        for(var st=0;st<400;st++){var ns=[];for(var i=0;i<N;i++){var h=field(i,s,graph.J,g,P);ns.push(r()<sig(h/T)?1:-1);}s=ns;
+          if(st>=150){var n=0;s.forEach(function(v){n+=v;});vals.push(Math.abs(n/N));}}
+        var mu=vals.reduce(function(a,b){return a+b;},0)/vals.length,v=vals.reduce(function(a,b){return a+(b-mu)*(b-mu);},0)/vals.length;acc+=N*v;}
+      chis.push(acc/4);});
+    var svg=document.getElementById("sweepChart");svg.innerHTML="";var W=720,H=260,m={l:50,r:20,t:20,b:40};
+    var ymax=Math.max.apply(null,chis)*1.15||1;
+    var ax=axes(svg,W,H,m,0.05,20,0,ymax,[0.05,0.1,0.5,1,2,5,10,20],[0,+(ymax/2).toFixed(2),+ymax.toFixed(2)],"Temperature T (log scale)",true);
+    poly(svg,Ts.map(function(T,i){return[ax.X(T),ax.Y(chis[i])];}),css("--agree"));
+    var pk=chis.indexOf(Math.max.apply(null,chis)),Tc=Ts[pk];
+    el("line",{x1:ax.X(Tc),x2:ax.X(Tc),y1:m.t,y2:H-m.b,stroke:css("--agree"),"stroke-dasharray":"5 4"},svg);
+    el("text",{x:ax.X(Tc)+6,y:m.t+12,"font-size":12,fill:css("--agree")},svg,"Critical temperature ≈ "+Tc.toFixed(2));
+    el("line",{x1:ax.X(P.T),x2:ax.X(P.T),y1:m.t,y2:H-m.b,stroke:css("--ink"),"stroke-width":2},svg);
+    el("text",{x:ax.X(P.T)-6,y:m.t+30,"text-anchor":"end","font-size":12,fill:css("--ink")},svg,"Current temperature "+P.T.toFixed(2));
+    el("text",{x:m.l+4,y:m.t-4,"font-size":12,fill:css("--ink2")},svg,"Fluctuation χ");
+    note.textContent=P.T<Tc?"The current temperature is below the critical temperature: the group grows more convinced, matching the paper.":"The current temperature is above the critical temperature: the group stays undecided.";btn.disabled=false;
+  },30);
+});
+
+// ---------- attack ----------
+document.getElementById("attack").addEventListener("click",function(){
+  var btn=this,note=document.getElementById("attackNote");btn.disabled=true;note.textContent="Computing…";
+  setTimeout(function(){
+    var P={bp:2.10,bm:0.75,b0:0.93,T:1,gm:0.15,gs:0.6,truth:0.31},ks=[0,1,2,4,6,8],reps=60,res={plain:[],def:[]};
+    ["plain","def"].forEach(function(mode){ks.forEach(function(k){var ok=0;
+      for(var rep=0;rep<reps;rep++){var seed=1000+rep,graph=makeGraph("random",0.5,seed),r=rng(seed*7+k);
+        var g=[];for(var i=0;i<N;i++)g.push(P.gm+P.gs*gauss(r));
+        var links=[];for(var a=0;a<k;a++){var tg=[];while(tg.length<4){var c=Math.floor(r()*N);if(tg.indexOf(c)<0)tg.push(c);}links.push(tg);}
+        var w=mode==="plain"?P.b0+P.bp:P.b0;
+        var extra=function(i){var h=0;links.forEach(function(tg){if(tg.indexOf(i)>=0)h+=w*(-1);});return h;};
+        var s=[];for(i=0;i<N;i++){s.push(vote(sig(g[i]),r,K)>0?1:-1);}
+        var last;for(var t=1;t<=8;t++){var o=[],ns=[];for(i=0;i<N;i++){var h=field(i,s,graph.J,g,P,extra);var ob=vote(sig(h),r,K);o.push(ob);ns.push(ob>0?1:-1);}s=ns;last=o;}
+        if(stats(last).n>0)ok++;}
+      res[mode].push(Math.round(ok/reps*100));});});
+    hbars(document.getElementById("attackChart"),ks.map(function(k,i){return{label:k+" adversaries",v:[res.plain[i],res.def[i]]};}),{series:[{name:"No defense",color:css("--agree")},{name:"Friend status verified",color:css("--g-bd")}],max:100,unit:"%",l:110,bh:11,gap:6});
+    note.textContent="Result: the more adversarial agents, the less often the honest majority ends up correct. With the defense, the decline is much slower.";btn.disabled=false;
+  },30);
+});
+
+// ---------- quiz ----------
+(function(){var qs=[
+  ["What physical system does the paper compare an AI group to?",["Boiling water","A set of tiny magnetic needles (the Ising model)","Planetary orbits","An electric circuit"],1,"Each agent is like a needle that points up or down and is turned by its neighbors."],
+  ["Why do most groups reach consensus instead of splitting into two camps?",["The questions are too easy","Agents never oppose anyone","The pull of friends is far stronger than the push of rivals","There are too few rounds"],2,"The effective friend weight is 0.99 to 3.03, while the effective rival weight is at most 0.73, too weak to hold two camps apart."],
+  ["On math questions, groups get more accurate. How does the paper explain this?",["Friends holding the correct answer pull harder","Agents check their own work","Wrong answers are deleted","A human corrects them"],0,"The five-coupling model shows that correct friends pull harder and wrong rivals push harder, both moving the group toward the right answer."],
+  ["Why does the paper use balanced accuracy instead of ordinary accuracy?",["The model is too slow","Copying last round or always guessing the majority class would otherwise score high","The questions are too hard","There is too little data"],1,"Agents rarely change their minds, so copying already scores high on ordinary accuracy. Balanced accuracy gives copying and guessing only 50."],
+  ["What does it mean that the operating point is below the critical temperature?",["The group stays undecided","The group becomes more convinced and more orderly","Agents stop talking","The model fails"],1,"Below the critical temperature, the system behaves like freezing water and moves from disorder to order."],
+  ["From a security perspective, what is the paper's biggest gap?",["It does not use GPUs","It assumes every agent is honest and never considers deliberate manipulation","It uses too few questions","It has no formula"],1,"If group behavior is predictable, it can be manipulated. How far adversarial agents posing as friends could steer a group is not studied."]
+];
+var box=document.getElementById("quiz");
+qs.forEach(function(q,k){var d=document.createElement("details");d.className="q";var s=document.createElement("summary");s.textContent=(k+1)+". "+q[0];d.appendChild(s);
+  var ops=document.createElement("div");ops.className="opts";var a=document.createElement("div");a.className="a";a.hidden=true;a.textContent=q[3];
+  q[1].forEach(function(o,i){var b=document.createElement("button");b.type="button";b.textContent=o;b.addEventListener("click",function(){ops.querySelectorAll("button").forEach(function(x,j){x.classList.remove("ok","no");if(j===q[2])x.classList.add("ok");});if(i!==q[2])b.classList.add("no");a.hidden=false;a.textContent=(i===q[2]?"Correct. ":"Not quite. The correct answer is marked in green. ")+q[3];});ops.appendChild(b);});
+  d.appendChild(ops);d.appendChild(a);box.appendChild(d);});
+})();
+
+// ---------- toc highlight ----------
+(function(){var links=[].slice.call(document.querySelectorAll("nav.toc ol a"));if(!("IntersectionObserver" in window))return;
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(l){l.classList.toggle("on",l.getAttribute("href")==="#"+e.target.id);});}});},{rootMargin:"-30% 0px -60% 0px"});
+  document.querySelectorAll("main section").forEach(function(s){io.observe(s);});})();
+})();
+</script>
+</body>
+</html>
